@@ -21,7 +21,7 @@ import pandas_ta as pta
 import freqtrade.vendor.qtpylib.indicators as qtpylib
 
 
-class Wtest(IStrategy):
+class WT(IStrategy):
     """
     This strategy is hand-crafted and made with love to help myself and my good frinds to
     achive our financial freedom.
@@ -59,13 +59,13 @@ class Wtest(IStrategy):
 
     # Optimal stoploss designed for the strategy.
     # This attribute will be overridden if the config file contains "stoploss".
-    stoploss = -0.4
+    stoploss = -0.99
 
     # Trailing stoploss
-    trailing_stop = True
-    trailing_only_offset_is_reached = True
-    trailing_stop_positive = 0.482
-    trailing_stop_positive_offset = 0.558
+    trailing_stop = False
+    # trailing_only_offset_is_reached = False
+    # trailing_stop_positive = 0.01
+    # trailing_stop_positive_offset = 0.0  # Disabled / not configured
 
     # Run "populate_indicators()" only for new candle.
     process_only_new_candles = False
@@ -81,19 +81,19 @@ class Wtest(IStrategy):
     # Strategy parameters
     strating_balance=1000
 
-    over_sell_level = IntParameter(-65, -45, default=-46, space="buy", optimize=True)
-    take_profit_precent = DecimalParameter(0.003, 0.02, decimals=3, default=0.02, space="buy", optimize=True)
+    over_sell_level = IntParameter(-65, -45, default=-53, space="buy", optimize=True)
+    take_profit_precent = DecimalParameter(0.003, 0.02, decimals=3, default=0.005, space="buy", optimize=True)
     # bigger_trend_respect = CategoricalParameter(['1h', '4h', '1d', False], default=False, space="buy", optimize=True)
     # DCA configration
     # Enable The DCA and safty odrers in the strategy
     # position_adjustment_enable = BooleanParameter(default=False, space="buy", optimize=True)
     position_adjustment_enable = True
-    max_epa = IntParameter(1, 25, default=11, space="buy", optimize=True)
+    max_epa = IntParameter(1, 25, default=10, space="buy", optimize=True)
     max_dca_multiplier = DecimalParameter(2, 10, decimals=1, default=5.5, space="buy", optimize=False)
-    drow_down_dca_precentage = DecimalParameter(-0.3,-0.01, decimals=2, default=-0.01, space="buy", optimize=True)
-    safty_order_size_precntage = DecimalParameter(0.1, 3, decimals=1, default=1.3, space="buy", optimize=True)
+    drow_down_dca_precentage = DecimalParameter(-0.3,-0.01, decimals=2, default=-0.05, space="buy", optimize=True)
+    safty_order_size_precntage = DecimalParameter(0.1, 3, decimals=1, default=0.5, space="buy", optimize=True)
     re_investment=True
-    re_investment_ratio=0.5
+    re_investment_ratio=0.3
 
     @property
     def max_entry_position_adjustment(self):
@@ -118,7 +118,7 @@ class Wtest(IStrategy):
                 # This is similar to the hyperspace dimensions used for constructing the ROI tables.
                 SKDecimal(0.001, 0.1, decimals=3, name='trailing_stop_positive_offset_p1'),
 
-                # Categorical([True, False], name='trailing_only_offset_is_reached'),
+                Categorical([True, False], name='trailing_only_offset_is_reached'),
             ]
 
         # Define a custom max_open_trades space
@@ -222,12 +222,12 @@ class Wtest(IStrategy):
 
         return dataframe
 
-    # def custom_exit(self, pair: str, trade: 'Trade', current_time: 'datetime', current_rate: float,
-    #                 current_profit: float, **kwargs):
-    #     if current_profit > self.take_profit_precent.value:
-    #         if trade.nr_of_successful_buys >1:
-    #             return f'DCA_EXIT : {trade.nr_of_successful_buys}'
-    #         return 'Normal_Exit'
+    def custom_exit(self, pair: str, trade: 'Trade', current_time: 'datetime', current_rate: float,
+                    current_profit: float, **kwargs):
+        if current_profit > self.take_profit_precent.value:
+            if trade.nr_of_successful_buys >1:
+                return f'DCA_EXIT : {trade.nr_of_successful_buys}'
+            return 'Normal_Exit'
 
     # This is called when placing the initial order (opening trade)
     def custom_stake_amount(self, pair: str, current_time: datetime, current_rate: float,
