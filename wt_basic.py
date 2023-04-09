@@ -81,8 +81,8 @@ class WT(IStrategy):
     # Strategy parameters
     strating_balance=1000
 
-    over_sell_level = IntParameter(-65, -45, default=-53, space="buy", optimize=True)
-    take_profit_precent = DecimalParameter(0.003, 0.02, decimals=3, default=0.005, space="buy", optimize=True)
+    over_sell_level = IntParameter(-65, -45, default=-46, space="buy", optimize=True)
+    take_profit_precent = DecimalParameter(0.003, 0.02, decimals=3, default=0.019, space="buy", optimize=True)
     # bigger_trend_respect = CategoricalParameter(['1h', '4h', '1d', False], default=False, space="buy", optimize=True)
     # DCA configration
     # Enable The DCA and safty odrers in the strategy
@@ -91,7 +91,7 @@ class WT(IStrategy):
     max_epa = IntParameter(1, 25, default=10, space="buy", optimize=True)
     max_dca_multiplier = DecimalParameter(2, 10, decimals=1, default=5.5, space="buy", optimize=False)
     drow_down_dca_precentage = DecimalParameter(-0.3,-0.01, decimals=2, default=-0.05, space="buy", optimize=True)
-    safty_order_size_precntage = DecimalParameter(0.1, 3, decimals=1, default=0.5, space="buy", optimize=True)
+    safty_order_size_precntage = DecimalParameter(0.1, 3, decimals=1, default=1.0, space="buy", optimize=True)
     re_investment=True
     re_investment_ratio=0.3
 
