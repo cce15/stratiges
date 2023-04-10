@@ -82,7 +82,7 @@ class WT(IStrategy):
     strating_balance = 407
 
     over_sell_level = IntParameter(-65, -45, default=-46, space="buy", optimize=True)
-    take_profit_precent = DecimalParameter(0.003, 0.02, decimals=3, default=0.005, space="buy", optimize=True)
+    take_profit_precent = DecimalParameter(0.003, 0.02, decimals=3, default=0.01, space="buy", optimize=True)
     # bigger_trend_respect = CategoricalParameter(['1h', '4h', '1d', False], default=False, space="buy", optimize=True)
     # DCA configration
     # Enable The DCA and safty odrers in the strategy
@@ -235,6 +235,7 @@ class WT(IStrategy):
                             entry_tag: Optional[str], **kwargs) -> float:
         if "BTC" in pair:
             proposed_stake = proposed_stake + (proposed_stake * 0.35)
+            return proposed_stake
 
         if self.re_investment:
             total_profit = self.wallets.get_free('USDT') - self.strating_balance
