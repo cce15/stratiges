@@ -79,10 +79,10 @@ class WT(IStrategy):
     startup_candle_count: int = 30
     # ===============================================================================
     # Strategy parameters
-    strating_balance=1000
+    strating_balance = 407
 
     over_sell_level = IntParameter(-65, -45, default=-46, space="buy", optimize=True)
-    take_profit_precent = DecimalParameter(0.003, 0.02, decimals=3, default=0.019, space="buy", optimize=True)
+    take_profit_precent = DecimalParameter(0.003, 0.02, decimals=3, default=0.005, space="buy", optimize=True)
     # bigger_trend_respect = CategoricalParameter(['1h', '4h', '1d', False], default=False, space="buy", optimize=True)
     # DCA configration
     # Enable The DCA and safty odrers in the strategy
@@ -90,10 +90,10 @@ class WT(IStrategy):
     position_adjustment_enable = True
     max_epa = IntParameter(1, 25, default=10, space="buy", optimize=True)
     max_dca_multiplier = DecimalParameter(2, 10, decimals=1, default=5.5, space="buy", optimize=False)
-    drow_down_dca_precentage = DecimalParameter(-0.3,-0.01, decimals=2, default=-0.05, space="buy", optimize=True)
+    drow_down_dca_precentage = DecimalParameter(-0.3, -0.01, decimals=2, default=-0.05, space="buy", optimize=True)
     safty_order_size_precntage = DecimalParameter(0.1, 3, decimals=1, default=1.0, space="buy", optimize=True)
-    re_investment=True
-    re_investment_ratio=0.3
+    re_investment = True
+    re_investment_ratio = 1
 
     @property
     def max_entry_position_adjustment(self):
@@ -102,7 +102,7 @@ class WT(IStrategy):
     class HyperOpt:
         # Define a custom stoploss space.
         def stoploss_space():
-            return [SKDecimal(-0.99,-0.05, decimals=2, name='stoploss')]
+            return [SKDecimal(-0.99, -0.05, decimals=2, name='stoploss')]
 
         def trailing_space() -> List[Dimension]:
             # All parameters here are mandatory, you can only modify their type or the range.
@@ -225,7 +225,7 @@ class WT(IStrategy):
     def custom_exit(self, pair: str, trade: 'Trade', current_time: 'datetime', current_rate: float,
                     current_profit: float, **kwargs):
         if current_profit > self.take_profit_precent.value:
-            if trade.nr_of_successful_buys >1:
+            if trade.nr_of_successful_buys > 1:
                 return f'DCA_EXIT : {trade.nr_of_successful_buys}'
             return 'Normal_Exit'
 
@@ -233,12 +233,15 @@ class WT(IStrategy):
     def custom_stake_amount(self, pair: str, current_time: datetime, current_rate: float,
                             proposed_stake: float, min_stake: float, max_stake: float,
                             entry_tag: Optional[str], **kwargs) -> float:
+        if "BTC" in pair:
+            proposed_stake = proposed_stake + (proposed_stake * 0.35)
+
         if self.re_investment:
-            total_profit= self.wallets.get_free('USDT') - self.strating_balance
-            st= total_profit*self.re_investment_ratio
-            return (proposed_stake +st)
-        # We need to leave most of the funds for possible further DCA orders
-        # This also applies to fixed stakes
+            total_profit = self.wallets.get_free('USDT') - self.strating_balance
+            st = total_profit * self.re_investment_ratio
+            return (proposed_stake + st)
+            # We need to leave most of the funds for possible further DCA orders
+            # This also applies to fixed stakes
 
         return proposed_stake
 
