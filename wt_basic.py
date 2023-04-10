@@ -234,7 +234,12 @@ class WT(IStrategy):
                             proposed_stake: float, min_stake: float, max_stake: float,
                             entry_tag: Optional[str], **kwargs) -> float:
         if "BTC" in pair:
-            proposed_stake = proposed_stake + (proposed_stake * 0.35)
+            proposed_stake = 130
+            if self.re_investment:
+                total_profit = self.wallets.get_free('USDT') - self.strating_balance
+                st = total_profit * self.re_investment_ratio
+                return (proposed_stake + st)
+            
             return proposed_stake
 
         if self.re_investment:
