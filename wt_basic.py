@@ -79,9 +79,9 @@ class WT(IStrategy):
     startup_candle_count: int = 30
     # ===============================================================================
     # Strategy parameters
-    strating_balance = 407
+    strating_balance = 792
 
-    over_sell_level = IntParameter(-65, -45, default=-46, space="buy", optimize=True)
+    over_sell_level = IntParameter(-65, -45, default=-45, space="buy", optimize=True)
     take_profit_precent = DecimalParameter(0.003, 0.02, decimals=3, default=0.01, space="buy", optimize=True)
     # bigger_trend_respect = CategoricalParameter(['1h', '4h', '1d', False], default=False, space="buy", optimize=True)
     # DCA configration
@@ -233,14 +233,6 @@ class WT(IStrategy):
     def custom_stake_amount(self, pair: str, current_time: datetime, current_rate: float,
                             proposed_stake: float, min_stake: float, max_stake: float,
                             entry_tag: Optional[str], **kwargs) -> float:
-        if "BTC" in pair:
-            proposed_stake = 130
-            if self.re_investment:
-                total_profit = self.wallets.get_free('USDT') - self.strating_balance
-                st = total_profit * self.re_investment_ratio
-                return (proposed_stake + st)
-            
-            return proposed_stake
 
         if self.re_investment:
             total_profit = self.wallets.get_free('USDT') - self.strating_balance
