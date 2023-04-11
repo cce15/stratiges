@@ -79,7 +79,6 @@ class WT(IStrategy):
     startup_candle_count: int = 30
     # ===============================================================================
     # Strategy parameters
-    strating_balance = 792
 
     over_sell_level = IntParameter(-65, -45, default=-45, space="buy", optimize=True)
     take_profit_precent = DecimalParameter(0.003, 0.02, decimals=3, default=0.01, space="buy", optimize=True)
@@ -235,7 +234,9 @@ class WT(IStrategy):
                             entry_tag: Optional[str], **kwargs) -> float:
 
         if self.re_investment:
-            total_profit = self.wallets.get_free('USDT') - self.strating_balance
+
+            total_profit = Trade.get_total_closed_profit()
+            print(total_profit)
             st = total_profit * self.re_investment_ratio
             return (proposed_stake + st)
             # We need to leave most of the funds for possible further DCA orders
