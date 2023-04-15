@@ -235,7 +235,7 @@ class WT(IStrategy):
 
         if self.re_investment:
 
-            total_profit = Trade.get_total_closed_profit()
+            total_profit = Trade.get_total_closed_profit()/(len(self.config.get("exchange")["pair_whitelist"]))
             print(total_profit)
             st = total_profit * self.re_investment_ratio
             return (proposed_stake + st)
